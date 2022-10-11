@@ -24,6 +24,7 @@ let erasing = false;
 let erasedLoadMsg = false;
 let msgFade, msgDiv;
 let loadAnother = false, loadDelay = 0;
+let tag = ["hanoi","Tokyo","Newyork","Washington"];
 
 function setup() {
 	// createCanvas(windowWidth, windowHeight);
@@ -35,7 +36,6 @@ function setup() {
   getJSON();
 }
 
-let tag = ["hanoi","Tokyo","Newyork","Washington"];
 function draw(){
 	let tempGIF;
 		if (loadAnother && GIFsLoaded < GIFurls.length) {
