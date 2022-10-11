@@ -1,16 +1,12 @@
-var bigEnough = 3.0;						// When GIFs grow this big, show a new GIF
-const maxImageScale = 15.0;				// GIFs can't grow bigger than this
-const randomTag = false;			// To search with a specific tag, set to false, then set currentTag
+var bigEnough = 3.0;					// Hạn mức phình to của ảnh cho đến khi hiện ảnh tiếp 
+const maxImageScale = 15.0;				// Max có thể đạt được của ảnh , sau đó mất 
+const randomTag = false;			
 let currentTag = 0;			
 const frameSkip = 0;
 const api = "https://api.giphy.com/v1/stickers/search?&api_key="; 
 const apiKey = ["Ln1OMDKTMpwmS1AX3OnlmVBfPsuSEkje", "A6MgOoK9jJ0wFHnuM3rI9GzXLkrmAChZ", "cSsLBM6hA6jGEF5CySVunnXgEviMsWwF", "fpK8CwaWa9vraD6NFgEAjHMfnOTgvhZr"];
-let sequentialDL = false;				// Instead of loading GIFs in advance, load them in the background.
-													// A good idea in theory, but in practice it looks terrible until everything loads.
-		// When you change tags sequentialDL changes to true, because it's better than stopping and waiting for 100% new GIFs.
-
-// Customize variables above -- change the ones below at your own risk:
-
+let sequentialDL = false;															
+// Khai bao 
 let query;
 let currentKey = 3;			
 let timer = 0;					
@@ -42,7 +38,6 @@ function setup() {
 const tag = ["hanoi"];
 function draw(){
 	let tempGIF;
-	// if (GIFsLoaded < 50) {			// still loading?
 		if (loadAnother && GIFsLoaded < GIFurls.length) {
 			if (loadDelay < 199) {
 				loadDelay++;
@@ -50,39 +45,39 @@ function draw(){
 				if (GIFsLoaded % 5 == 4) {
 					showMsg("loading " + query + " GIFs " + GIFsLoaded * 2 + "%");
 				}
-				loadImage(GIFurls[GIFsLoaded], gotGIF);		// download the next one
+				loadImage(GIFurls[GIFsLoaded], gotGIF);		// Tải xuống GIT tiếp theo 
 				loadAnother = false;
 			}
 		}
 	// }
 
-	if (GIFsLoaded > (sequentialDL ? 0 : 49)) {			// if enough images are loaded,
+	if (GIFsLoaded > (sequentialDL ? 0 : 49)) {			// Tải đủ ảnh 
 		if (!erasedLoadMsg) {
-			background('gray');												// get the first GIF:
-			tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]);
+			background('gray');							
+			tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]); // Lấy GIF đầu tiên 
 			GIFs.push(tempGIF);
 			erasedLoadMsg = true;
-			keyTyped();								// show valid keypresses
+			keyTyped();								
 		}
 		
 		if (GIFs.length > 0) {
 			if (GIFs[GIFs.length-1].scale > bigEnough &&
-					GIFs[GIFs.length-1].scale < bigEnough + 0.2) {		// when the most recent GIF is big enough,
+					GIFs[GIFs.length-1].scale < bigEnough + 0.2) {		      // Mở ảnh khi GIF ở trước đủ lớn
 				GIFnum = ++GIFnum % loadedImages.length;
-				tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]);
-				GIFs.push(tempGIF);												// add another GIF to the display
+				tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]); // Thêm GIF khác vào màn hình 
+				GIFs.push(tempGIF);												
 			}
-		} else {																		// if no GIFs are playing,
+		} else { // Nếu không có GIF đang chạy 
 			GIFnum = ++GIFnum % loadedImages.length;
 			tempGIF = new GIFzoomer(width / 2, height / 2, loadedImages[GIFnum]);
-			GIFs.push(tempGIF);												// add another GIF to the display
+			GIFs.push(tempGIF);	// Thêm một GIF khác vào màn hình 
 		}
 		if (frameSkip < 2 || frameCount % frameSkip == 0) {
 			if (GIFs.length > 0) {
 				// showMsg("\n\n" + GIFs.length + "\t" + GIFnum);
 				for (let i = 0; i < GIFs.length; i++) {
-					if (GIFs[i].fade <= 0) {			// GIF big enough?   (fading not implented)
-						GIFs.shift();								// delete the oldest GIF displaying
+					if (GIFs[i].fade <= 0) {			// Khi GIF trước đủ lớn mở GIF sau lên và không chèn lên GIF trước 
+						GIFs.shift();				// Xóa GIF cũ nhất đang thấy 
 					} else {
 						GIFs[i].update();
 						GIFs[i].draw();
@@ -94,27 +89,31 @@ function draw(){
 	showMsg();
 }
 
-function getJSON() {			// gets the giphy API to send us the URLs of 50 GIFs
+function getJSON() {			// nhận API 
 	offset = int(random(100));
-  let url = api + apiKey[currentKey] + "&offset=" + offset + "&q=" + query; //concatenate api call
+  let url = api + apiKey[currentKey] + "&offset=" + offset + "&q=" + query; //kết nối 
 	GIFsLoaded = 0;
-  loadJSON(url, gotData, loadError);		// gotData is called once the API's response arrives
+  loadJSON(url, gotData, loadError);		// gotData được gọi khi nhận được phản hồi từ API
 }
 
-function gotData(giphy) { 	// this function is called after loadJSON is finished
+function gotData(giphy) { 	// được gọi sau khi loadJSON dừng
 	GIFurls = [];
-	for (let i = 0; i < giphy.data.length; i++) {					// extract all fifty GIF URLs into the GIFurls array
-		// GIFurls.push(giphy.data[i].images.original.url);		// original GIF versions look best but load slowest
-		// GIFurls.push(giphy.data[i].images.downsized.url);		// downsized is medium quality, but slower than fixed
-		GIFurls.push(giphy.data[i].images.fixed_height.url);	// fixed is fastest, but lowest image quality
-		if (!sequentialDL)																	// if we're not downloading GIFs one at a time,
-			loadImage(GIFurls[GIFurls.length-1], gotGIF, loadError);		// download GIFs as we get the URLs
+	// chuyển GIF lấy từ API vào mảng 
+	for (let i = 0; i < giphy.data.length; i++) {	
+		// Đẩy GIF gốc lên khá chậm nhưng chất lượng hình ảnh cao , 
+		// Có thể dùng cách như dưới ( Line 106 ) để load nhanh nhất nhưng sẽ làm chất lượng hình ảnh tồi
+		GIFurls.push(giphy.data[i].images.original.url);		
+		// GIFurls.push(giphy.data[i].images.fixed_height.url);	
+		if (!sequentialDL)	
+			// Tải xuống GIF khi nhận được URL 
+			loadImage(GIFurls[GIFurls.length-1], gotGIF, loadError);		
   }
-	GIFsLoaded = 0;				// at this point no GIFs have downloaded -- when each arrives, gotGIF is called
-	if (sequentialDL) loadImage(GIFurls[GIFsLoaded], gotGIF, loadError);		// download just the first GIF
+	GIFsLoaded = 0;				// Không có GIF nào được tải xuống - khi mỗi tệp đến, gotGIF được gọi
+	if (sequentialDL) loadImage(GIFurls[GIFsLoaded], gotGIF, loadError);		// Chỉ down xuống GIF đầu tiên 
 }
 
-function gotGIF(giphyImg) { 	// this function is called after each loadImage is finished
+// Hàm này được gọi sau mỗi lần loadImage kết thúc
+function gotGIF(giphyImg) { 	
 	if (GIFsLoaded == 0 && loadedImages.length >= 50) loadedImages = [];
 	if (GIFsLoaded < 50 && loadedImages.length >= 50) {
 		loadedImages[GIFsLoaded] = giphyImg;
@@ -122,9 +121,8 @@ function gotGIF(giphyImg) { 	// this function is called after each loadImage is 
 		loadedImages.push(giphyImg);
 	}
 	GIFsLoaded++;
-	if (sequentialDL) {														// if we're downloading GIFs one at a time,
+	if (sequentialDL) {														
 		if (GIFsLoaded < GIFurls.length) {
-	// 		loadImage(GIFurls[GIFsLoaded], gotGIF);		// download the next one
 			loadAnother = true;
 		}
 	}
@@ -141,15 +139,15 @@ function loadError(errMsg) {
 
 function keyTyped() {
 	let tempMsg = "";
-	if (key === '-') { // Minus pressed = less images
+	if (key === '-') { 
 		bigEnough += 0.5;
 		if (bigEnough > maxImageScale) bigEnough = maxImageScale;
 		tempMsg = "less images (" + int(map(bigEnough, 0.5, maxImageScale, 100, 0)) + "%)";
-	} else if (key === '+' || key === '=') { 	// Plus pressed = more images
+	} else if (key === '+' || key === '=') { 	
 		bigEnough -= 0.5;
 		if (bigEnough < 0.5) bigEnough = 0.5;
 		tempMsg = "more images (" + int(map(bigEnough, 0.5, maxImageScale, 100, 0)) + "%)";
-	} else if (key != null) {			// keypress that wasn't - or + but isn't nothing = change search tag
+	} else if (key != null) {			// Thay đổi thẻ tìm kiếm bằng cách bấm nút ngoài trừ hoặc cộng
 		++currentTag;
 		if (currentTag >= tag.length) currentTag = 0;
 		query = tag[currentTag];
@@ -165,7 +163,7 @@ function mouseClicked() {
 	keyTyped();
 }
 
-function showMsg(tempMsg) {		// a more WebGL-friendly showMsg
+function showMsg(tempMsg) {		// Tạo độ thân thiện khi thông báo dạng Text hiển thị
 	if (msgDiv == null) {
 		msgDiv = createDiv();
 		msgDiv.style('font-family', 'sans-serif');
@@ -176,7 +174,7 @@ function showMsg(tempMsg) {		// a more WebGL-friendly showMsg
 		msgDiv.style('top', '20px');
 		msgDiv.style('left', '20px');
 	}
-	if (tempMsg != null) {			// new message to show
+	if (tempMsg != null) {			// Hiển thị thông báo mới 
 		tempMsg += "<br><br>press Minus or Plus for more or less images <br>any other key to change the search tag (" + tag[currentTag] + ")";
 		msgDiv.html(tempMsg);
 		msgFade = 1.0;
@@ -204,7 +202,6 @@ class GIFzoomer {
 	draw() {
 		push();
 		imageMode(CENTER);
-		// translate(this.x, this.y);					// uncomment for non-WEBGL canvas
 		scale(this.scale);
 		image(this.img, 0, 0);
 		pop();
