@@ -35,7 +35,7 @@ function setup() {
   getJSON();
 }
 
-const tag = ["hanoi"];
+let tag = ["hanoi","Tokyo","Newyork","Washington"];
 function draw(){
 	let tempGIF;
 		if (loadAnother && GIFsLoaded < GIFurls.length) {
