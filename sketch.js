@@ -1,4 +1,4 @@
-var bigEnough = 3.0;
+var bigEnough = 15.0;
 var maxImageScale = 15.0;
 let randomTag = false;
 let currentTag = 0 ;
