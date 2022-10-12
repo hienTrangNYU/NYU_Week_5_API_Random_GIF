@@ -25,10 +25,17 @@ let msgFade, msgDiv;
 let loadAnother = false,
     loadDelay = 0;
 let tag = ["hanoi","tokyo","washington","newyork"];
+let btn;
 function setup() {
     // createCanvas(windowWidth, windowHeight);
     createCanvas(windowWidth, windowHeight, WEBGL);
     offset = int(random(100));
+    btn = createButton("USE");
+    btn.mousePressed(keyTyped);
+    btn.size(50,50);
+    btn.position(10,10);
+    btn.style("font-family", "Bodoni");
+    btn.style("font-size", "20px");
     if (randomTag) currentTag = int(random(tag.length));
     query = tag[currentTag];
     showMsg("loading " + query + " GIFs 0%");
@@ -161,12 +168,12 @@ function showMsg(tempMsg) {
     if (msgDiv == null) {
         msgDiv = createDiv();
         msgDiv.style('font-family', 'sans-serif');
-        msgDiv.style('font-size', '20px');
+        msgDiv.style('font-size', '15px');
         msgDiv.style('font-weight', 'bold');
         // msgDiv.style('color', 'white');
         msgDiv.style('position', 'fixed');
-        msgDiv.style('top', '20px');
-        msgDiv.style('left', '20px');
+        msgDiv.style('top', '35px');
+        msgDiv.style('left', '15px');
     }
     if (tempMsg != null) {
         tempMsg += "<br><br>KEY '+' TO FAST <br> KEY '-'TO SLOW <br> ANY KEY TO CHOOSE ( HA NOI . TOKYO . WASHINGTON . NEWYORK)(" + tag[currentTag] + ")";;
