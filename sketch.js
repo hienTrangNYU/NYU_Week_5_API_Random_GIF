@@ -31,7 +31,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
     offset = int(random(100));
     btn = createButton("USE");
-    btn.mousePressed(keyTyped);
+    btn.mousePressed(mouseClicked);
     btn.size(50,50);
     btn.position(10,10);
     btn.style("font-family", "Bodoni");
@@ -170,7 +170,7 @@ function showMsg(tempMsg) {
         msgDiv.style('font-family', 'sans-serif');
         msgDiv.style('font-size', '15px');
         msgDiv.style('font-weight', 'bold');
-        // msgDiv.style('color', 'white');
+        msgDiv.style('color', 'red');
         msgDiv.style('position', 'fixed');
         msgDiv.style('top', '35px');
         msgDiv.style('left', '15px');
